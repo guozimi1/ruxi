@@ -1,0 +1,16 @@
+# Netlify 部署配置
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+# 把前端的 /api/generate 转发到 Netlify Function
+[[redirects]]
+  from = "/api/generate"
+  to = "/.netlify/functions/generate"
+  status = 200
+
+# SPA fallback（hash 路由，无需额外重写，但保留兜底）
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

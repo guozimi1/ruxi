@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#08070a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>入戏</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="stage">
+  <div id="grain"></div>
+  <div id="vignette"></div>
+
+  <!-- 顶部低调返回（重玩/换世界） -->
+  <div class="top-home" id="topHome" style="display:none">← 重新开始</div>
+
+  <!-- 1. 落地页 -->
+  <section class="scene" id="scene-landing">
+    <h1 class="logo-title">入 戏</h1>
+    <div class="logo-sub">RU · XI</div>
+    <p class="landing-copy narrate" id="landingNarr">
+      每个人都有一个还没醒来的身份……<br>推开门，看看你是谁。
+    </p>
+    <div class="entry-btns">
+      <button class="btn primary" id="btnCreate">创建我的世界</button>
+      <button class="btn ghost" id="btnJoin" style="display:none">我被邀请了 · 进入这个世界</button>
+    </div>
+  </section>
+
+  <!-- 2. 穿门 -->
+  <section class="scene" id="scene-doors">
+    <div class="door-head">
+      <div class="env-line" id="envLine"></div>
+      <p class="door-question" id="doorQuestion">—</p>
+      <div class="door-progress" id="doorProgress"></div>
+    </div>
+    <div class="door-stage" id="doorStage">
+      <div class="door" id="doorLeft" data-side="left">
+        <div class="door-label" id="labelLeft">左门</div>
+        <div class="door-hint">左滑 / 点门</div>
+      </div>
+      <div class="door" id="doorRight" data-side="right">
+        <div class="door-label" id="labelRight">右门</div>
+        <div class="door-hint">右滑 / 点门</div>
+      </div>
+    </div>
+    <div class="door-back" id="doorBack">↩ 走错门了，退一步</div>
+  </section>
+
+  <!-- 3. 世界揭示 -->
+  <section class="scene" id="scene-reveal">
+    <div class="reveal-tip" id="revealTip">你要去的世界，正在显现……</div>
+    <h2 class="reveal-name" id="revealName">—</h2>
+    <p class="reveal-desc" id="revealDesc"></p>
+  </section>
+
+  <!-- 4. 名字 + 照片 -->
+  <section class="scene" id="scene-input">
+    <p class="input-narr narrate show" id="inputNarr">在你正式登场之前——<br>告诉我，该怎么称呼你。</p>
+    <input class="name-input" id="nameInput" maxlength="8" placeholder="写下你的名字" autocomplete="off">
+    <div class="photo-zone" id="photoZone">
+      <div class="ph-text" id="phText">上传一张<br>你的照片</div>
+      <img id="photoPreview" style="display:none">
+    </div>
+    <input type="file" id="fileInput" accept="image/*" style="display:none">
+    <p class="privacy">
+      照片仅用于本次生成你的角色立绘，<b>即用即弃、不作存储</b>。点击上传即表示你授权本次使用。可跳过，用做旧头像框替代。
+    </p>
+    <button class="btn primary" id="btnForge" style="width:230px">铸造我的身份</button>
+  </section>
+
+  <!-- 5. 铸造加载页 -->
+  <section class="scene" id="scene-forge">
+    <canvas id="forge-canvas"></canvas>
+    <div class="forge-lines" id="forgeLines"></div>
+    <div class="forge-fragment" id="forgeFragment"></div>
+  </section>
+
+  <!-- 6. 结果页（复古报纸） -->
+  <section class="scene" id="scene-result">
+    <div id="paperMount"></div>
+    <div class="result-actions">
+      <button class="btn primary" id="btnInvite">邀请好友来这个世界</button>
+      <button class="btn" id="btnGroup">查看世界群像</button>
+      <button class="btn" id="btnYuanbao">去元宝续写这个故事</button>
+      <button class="btn ghost" id="btnSave">保存角色卡图片</button>
+    </div>
+  </section>
+
+  <!-- 7. 群像页 -->
+  <section class="scene" id="scene-group">
+    <h2 class="group-title" id="groupTitle">世界群像</h2>
+    <div class="group-sub" id="groupSub">同处一个世界的人们</div>
+    <div class="cast-grid" id="castGrid"></div>
+    <div class="result-actions">
+      <button class="btn primary" id="btnInvite2">邀请更多人加入</button>
+      <button class="btn" id="btnYuanbao2">带全员去元宝续写</button>
+      <button class="btn ghost" id="btnMyCard">回到我的角色卡</button>
+    </div>
+  </section>
+
+  <!-- 穿门过场 -->
+  <div id="through"><div class="spark"></div></div>
+
+  <!-- 邀请弹层 -->
+  <div class="sheet" id="inviteSheet">
+    <h3 id="inviteTitle">来我创建的世界当个角色</h3>
+    <p id="inviteDesc">扫码或转发链接，让朋友走同样的流程，<br>成为这个世界里 ta 自己答出来的角色。</p>
+    <div class="qr-box" id="qrBox"></div>
+    <div class="link-row">
+      <input id="shareLink" readonly>
+      <button id="btnCopy">复制</button>
+    </div>
+    <div class="sheet-close" id="sheetClose">收起</div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- 第三方：二维码（本地内联，无外网依赖） -->
+<script src="js/qrcode.min.js"></script>
+<!-- 业务脚本 -->
+<script src="js/worlds.js"></script>
+<script src="js/store.js"></script>
+<script src="js/generator.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
